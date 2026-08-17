@@ -18,13 +18,13 @@ struct Blockchain {
 }
 
 impl Blockchain {
-    pub fn new(data: &str) -> Blockchain {
+    pub fn new() -> Blockchain {
         let index = 0;
         let timestamp = SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .unwrap()
             .as_secs();
-        let data = format!("{data}");
+        let data = String::from("Genesis Block");
         let previous_hash = String::from("0");
         let hash = calculate_hash(index, timestamp, &data, &previous_hash);
 
@@ -56,6 +56,6 @@ pub fn calculate_hash(index: u64, timestamp: u64, data: &str, previous_hash: &st
 }
 
 fn main() {
-    let gen_block = Blockchain::new("Genesis block");
+    let gen_block = Blockchain::new();
     println!("{:?}", gen_block);
 }
