@@ -1,9 +1,13 @@
 use sha2::Digest;
-use std::time::{SystemTime, UNIX_EPOCH};
+use std::{
+    fmt::format,
+    ops::Index,
+    time::{SystemTime, UNIX_EPOCH},
+};
 
 use sha2::Sha256;
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 struct Block {
     index: u64,
     timestamp: u64,
@@ -42,7 +46,33 @@ impl Blockchain {
             blocks: vec![genesis_block],
         }
     }
-    pub fn add_block() {}
+    pub fn add_block(&mut self, data: &str) -> Blockchain {
+        // get last block
+        let last_block = self.blocks.last().unwrap();
+        // add index
+        let index = last_block.index + 1;
+        let timestamp = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_secs();
+        let data = format!("{data}");
+        let previous_hash = last_block.hash.clone();
+        let hash = calculate_hash(index, timestamp, &data, &previous_hash);
+
+        let genesis_block = Block {
+            index: index,
+            timestamp: timestamp,
+            data: data,
+            previous_hash: previous_hash,
+            hash: hash,
+        };
+
+        //return gen. block
+        //
+        Blockchain {
+            blocks: vec![genesis_block],
+        }
+    }
     pub fn is_valid() {}
 
     pub fn print_chain() {}
@@ -56,6 +86,8 @@ pub fn calculate_hash(index: u64, timestamp: u64, data: &str, previous_hash: &st
 }
 
 fn main() {
-    let gen_block = Blockchain::new();
+    let mut gen_block = Blockchain::new();
     println!("{:?}", gen_block);
+    let new_block = Blockchain::add_block(&mut gen_block, "Alice -> Bob");
+    println!("{:?}", new_block);
 }
